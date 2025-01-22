@@ -13,6 +13,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>
                     </li>
+                    <?php
+                    if (basename($_SERVER['PHP_SELF']) !== 'create_event.php'){
+                    ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../views/create_event.php">Create New Event</a>
+                    </li>
+                    <?php
+                    }
+                    ?>
+                    
                 </ul>
             </div>
         </div>
