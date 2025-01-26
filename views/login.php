@@ -3,6 +3,15 @@ session_start();
 
 require_once '../db.php';
 
+if (isset($_SESSION['user_id'])) {
+    if ($_SESSION['user_role'] === 'admin') {
+        header("Location: admin/admin_panel.php");
+    } else {
+        header("Location: dashboard.php");
+    }
+    exit;
+}
+
 $message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_role'] = $user['role'];
 
                 if ($user['role'] === 'admin') {
-                    header("Location: admin_panel.php");
+                    header("Location: admin/admin_panel.php");
                 } else {
                     header("Location: dashboard.php");
                 }

@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 require_once '../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    var_dump($_POST['name']);
     $name = $_POST['name'];
     $description = $_POST['description'];
     $event_date = $_POST['event_date'];

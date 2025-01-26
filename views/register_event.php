@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             exit;
         }
 
-        $stmt = $conn->prepare("INSERT INTO attendees (name, email, phone_number) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO attendees (name, email, phone) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $name, $email, $phone_number);
         $stmt->execute();
         $attendee_id = $stmt->insert_id;
