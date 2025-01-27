@@ -3,7 +3,18 @@ session_start();
 
 require_once '../../db.php';
 
-$query = "SELECT * FROM events ORDER BY created_at DESC";
+$perPage = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $perPage;
+
+$totalQuery = "SELECT COUNT(*) as total FROM events";
+$totalResult = $conn->query($totalQuery);
+$totalRow = $totalResult->fetch_assoc();
+$totalEvents = $totalRow['total'];
+
+$totalPages = ceil($totalEvents / $perPage);
+
+$query = "SELECT * FROM events ORDER BY created_at DESC LIMIT $offset, $perPage";
 $result = $conn->query($query);
 
 // Handle CSV download
@@ -42,15 +53,6 @@ if (isset($_GET['download']) && isset($_GET['event_id'])) {
     exit();
 }
 
-    if (isset($_SESSION['message'])) {
-        echo "<div class='alert alert-success'>" . $_SESSION['message'] . "</div>";
-        unset($_SESSION['message']);
-    }
-
-    if (isset($_SESSION['error'])) {
-        echo "<div class='alert alert-danger'>" . $_SESSION['error'] . "</div>";
-        unset($_SESSION['error']);
-    }
 
 ?>
 
@@ -71,77 +73,122 @@ if (isset($_GET['download']) && isset($_GET['event_id'])) {
             justify-content: flex-end;
             margin-bottom: 20px;
         }
+        .pagination {
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="admin_panel.php">Dashboard</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="admin_panel.php">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="../logout.php">Logout</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-    </nav>
-    <div class="container">
-        <h2 class="my-4">Event Management Dashboard</h2>
-
-        <div class="search-container">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search Events">
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-bordered" id="eventTable">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Event Name</th>
-                        <th>Description</th>
-                        <th>Max Capacity</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Table rows will be inserted here dynamically -->
-                </tbody>
-            </table>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="admin_panel.php">Dashboard</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="admin_panel.php">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../logout.php">Logout</a>
+                </li>
+            </ul>
         </div>
     </div>
+</nav>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<div class="container">
+    <h2 class="my-4">Event Management Dashboard</h2>
+    <?php
+        if (isset($_SESSION['message'])) {
+            echo "<div class='alert alert-success'>" . $_SESSION['message'] . "</div>";
+            unset($_SESSION['message']);
+        }
 
-    <script>
-        $(document).ready(function() {
-            function fetchFilteredEvents(searchQuery = '') {
-                $.ajax({
-                    url: 'fetch_events.php',
-                    method: 'GET',
-                    data: { search: searchQuery },
-                    success: function(response) {
-                        $('#eventTable tbody').html(response);
-                    }
-                });
-            }
+        if (isset($_SESSION['error'])) {
+            echo "<div class='alert alert-danger'>" . $_SESSION['error'] . "</div>";
+            unset($_SESSION['error']);
+        }
+    ?>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search Events">
+    </div>
 
-            $('#searchInput').keyup(function() {
-                var searchQuery = $(this).val();
-                fetchFilteredEvents(searchQuery);
+    <div class="table-responsive">
+        <table class="table table-bordered" id="eventTable">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Event Name</th>
+                    <th>Description</th>
+                    <th>Max Capacity</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= $row['id'] ?></td>
+                        <td><?= htmlspecialchars($row['name']) ?></td>
+                        <td><?= htmlspecialchars($row['description']) ?></td>
+                        <td><?= $row['max_capacity'] ?></td>
+                        <td><?= $row['created_at'] ?></td>
+                        <td>
+                        <a href="update_event.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm mb-1">Edit</a>
+                        <a href="delete_event.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm mb-1">Delete</a>
+                        <a href="?download=1&event_id=<?= $row['id'] ?>" class="btn btn-primary btn-sm">Download Attendees</a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <nav>
+        <ul class="pagination">
+            <?php if ($page > 1): ?>
+                <li class="page-item"><a class="page-link" href="?page=<?= $page - 1 ?>">Previous</a></li>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                    <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                </li>
+            <?php endfor; ?>
+
+            <?php if ($page < $totalPages): ?>
+                <li class="page-item"><a class="page-link" href="?page=<?= $page + 1 ?>">Next</a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+</div>
+
+<!-- Bootstrap 5 bundle (includes Popper.js and Bootstrap JS) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Cache all rows initially
+        const rows = $('#eventTable tbody tr');
+
+        $('#searchInput').on('keyup', function() {
+            const searchQuery = $(this).val().toLowerCase();
+
+            rows.each(function() {
+                const rowText = $(this).text().toLowerCase();
+
+                if (rowText.includes(searchQuery)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
             });
-
-            fetchFilteredEvents();
         });
-    </script>
+    });
+</script>
 </body>
 </html>
+

@@ -32,7 +32,7 @@ if (isset($_GET['id'])) {
 
         if (mysqli_query($conn, $update_query)) {
             $_SESSION['message'] = "Event updated successfully!";
-            header('Location: update_event.php?id=' . $event_id);
+            header('Location: admin_panel.php?id=' . $event_id);
             exit;
         } else {
             $_SESSION['error'] = "Error updating event: " . mysqli_error($conn);

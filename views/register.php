@@ -10,16 +10,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $role = $_POST['role'];
 
-    if (empty($name) || empty($email) || empty($password) || empty($role)) {
+
+    if (empty($name) || empty($email) || empty($password)) {
         $message = "<div class='alert alert-danger'>All fields are required!</div>";
-    } else {
+    } 
+    elseif (strlen($password) < 6) {
+        $message = "<div class='alert alert-danger'>Password must be at least 6 characters long!</div>";
+    }
+    else {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-        $query = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
+        $query = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("ssss", $name, $email, $hashedPassword, $role);
+        $stmt->bind_param("sss", $name, $email, $hashedPassword);
 
         if ($stmt->execute()) {
             $message = "<div class='alert alert-success'>Registration successful! You can now <a href='login.php'>login</a>.</div>";
@@ -72,15 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label for="password" class="form-label">Password:</label>
                                 <input type="password" id="password" name="password" class="form-control"
                                     placeholder="Enter a strong password" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="role" class="form-label">Role:</label>
-                                <select id="role" name="role" class="form-select" required>
-                                    <option value="" disabled selected>Select a role</option>
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
-                                </select>
                             </div>
 
                             <div class="d-grid">
