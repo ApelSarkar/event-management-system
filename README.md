@@ -138,5 +138,5 @@ git clone https://github.com/ApelSarkar/event-management-system
 - SMS api integration
 ---
 
-Thanks you
+Thanks for reading
 
