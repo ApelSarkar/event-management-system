@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                             <div class="mb-3">
                                 <label for="event_date" class="form-label">Event Date & Time</label>
-                                <input type="datetime-local" class="form-control" name="event_date" required>
+                                <input type="datetime-local" class="form-control" name="event_date" id="event_date" required>
                             </div>
 
                             <div class="mb-3">
@@ -94,6 +94,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const eventDateInput = document.getElementById('event_date');
+        function setMinDateTime() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); 
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        eventDateInput.min = minDateTime;
+        }
+
+        setMinDateTime();
+    </script>
 </body>
 
 </html>

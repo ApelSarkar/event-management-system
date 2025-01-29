@@ -1,7 +1,8 @@
 <?php
+
 $servername = "localhost";
-$username = "root";
-$password = "";
+$username = "root"; // Removed trailing space
+$password = "";     // No trailing space
 $dbname = "event_management";
 
 // Create connection

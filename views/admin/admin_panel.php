@@ -3,7 +3,7 @@ session_start();
 
 require_once '../../db.php';
 
-$perPage = 10;
+$perPage = 5;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $perPage;
 
@@ -139,7 +139,7 @@ if (isset($_GET['download']) && isset($_GET['event_id'])) {
                         <td>
                         <a href="update_event.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm mb-1">Edit</a>
                         <a href="delete_event.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm mb-1">Delete</a>
-                        <a href="?download=1&event_id=<?= $row['id'] ?>" class="btn btn-primary btn-sm">Download Attendees</a>
+                        <a href="?download=1&event_id=<?= $row['id'] ?>" class="btn btn-primary btn-sm">CSV Download</a>
                         </td>
                     </tr>
                 <?php endwhile; ?>

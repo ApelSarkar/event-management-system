@@ -3,6 +3,14 @@ session_start();
 
 require_once '../db.php';
 
+$currentUrl = $_SERVER['REQUEST_URI'];
+$allowedPath = "/views/login.php"; 
+
+if (strpos($currentUrl, $allowedPath) !== false && $currentUrl !== $allowedPath) {
+    header("Location: $allowedPath");
+    exit;
+}
+
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['user_role'] === 'admin') {
         header("Location: admin/admin_panel.php");

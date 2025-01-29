@@ -17,8 +17,6 @@ $stmt->bind_param("i", $createdBy);
 $stmt->execute();
 $result = $stmt->get_result();
 
-
-
 ?>
 
 <!DOCTYPE html>
@@ -68,6 +66,8 @@ $result = $stmt->get_result();
                                                 <td><?php echo date('d M Y, h:i A', strtotime($event['date'])); ?></td>
                                                 <td><?php echo htmlspecialchars($event['max_capacity']); ?></td>
                                                 <td class="text-nowrap">
+                                                    <a href="view_event_user.php?event_id=<?php echo $event['id']; ?>"
+                                                    class="btn btn-info btn-sm">View</a>
                                                     <a href="edit_event.php?event_id=<?php echo $event['id']; ?>"
                                                         class="btn btn-warning btn-sm">Edit</a>
                                                     <a href="delete_event.php?event_id=<?php echo $event['id']; ?>"
