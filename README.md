@@ -40,7 +40,7 @@ I have added the database file , plese check it
 ---
 
 ## **API Documentation**
-### **Endpoint:** `/api_events`
+### **Endpoint:** `/api_events.php`
 **Method:** `GET`
 **Response Format:** JSON
 
@@ -102,8 +102,8 @@ git clone https://github.com/ApelSarkar/event-management-system
 ---
 
 ## **Usage Instructions**
-1. **User Registration:**
-   - http://apel.ct.ws/views/register.php
+1. **Attendie Registration:**
+   - http://apel.ct.ws/views/register_event.php
    - Navigate to the registration page and fill out the required details.
 
 2. **Login:**
